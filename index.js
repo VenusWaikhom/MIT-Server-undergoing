@@ -19,7 +19,7 @@ app.use("/api/account", loginRouter);
 
 // 404 Handler
 app.use((req, res, next) => {
-	res.status(404).json(
+	return res.status(404).json(
 		apiResponse(null, {
 			code: "NOT FOUND",
 			message: "invalid API route",
@@ -29,19 +29,13 @@ app.use((req, res, next) => {
 
 // General Error handler
 app.use((err, req, res, next) => {
-	// set locals, only providing error in development
-	// res.locals.message = err.message;
-	// res.locals.error = req.app.get("env") === "development" ? err : {};
 	console.error(err.stack);
-	res.status(500).send(
+	return res.status(500).send(
 		apiResponse(null, {
 			code: "INTERNAL_SERVER_ERROR",
 			message: err.toString(),
 		}),
 	);
-
-	// render the error page
-	res.status(err.status || 500);
 });
 
 app.listen(process.env.PORT, () =>

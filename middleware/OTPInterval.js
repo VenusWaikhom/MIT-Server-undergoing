@@ -10,7 +10,7 @@ const OTPInterval = (interval, verificationType) => async (req, res, next) => {
 	});
 	// First entry
 	if (!_otpToken) return next();
-	console.log(_otpToken);
+
 	// check for interval
 	const isUnderInterval =
 		Date.now() < new Date(_otpToken.updatedAt).getTime() + interval * 60 * 1000;

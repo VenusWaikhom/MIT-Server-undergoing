@@ -5,7 +5,7 @@ const apiResponse = require("../utils/apiResponse");
 const Authorization = async (req, res, next) => {
 	try {
 		const token = req.header("Authorization").slice("Bearer ".length);
-		console.log(token);
+		// console.log(token);
 		const decoded = jwt.verify(token, process.env.JWT_SECRET, {
 			algorithms: "HS256",
 		});
