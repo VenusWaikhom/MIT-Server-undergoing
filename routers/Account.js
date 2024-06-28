@@ -1,15 +1,23 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-const Authorization = require("../middleware/Authorization");
+const otpGen = require("otp-generator");
 
 const Account = require("../model/account");
-const apiResponse = require("../utils/apiResponse");
+const OTPToken = require("../model/otpToken");
+
 const {
 	ReqFieldValidator,
 	HeaderFieldValidator,
 } = require("../middleware/SignUpValidator");
 const ValidateSignupField = require("../middleware/ValidateSignupField");
 const ValidateLoginField = require("../middleware/ValidateLoginField");
+const Authorization = require("../middleware/Authorization");
+const OTPInterval = require("../middleware/OTPInterval");
+
+const apiResponse = require("../utils/apiResponse");
+const { sendMail } = require("../utils/mailSender");
+const htmlMailOTPTemplate = require("../template/mailOTPTemplate");
 
 const router = new express.Router();
 
@@ -117,19 +125,116 @@ router.post(
 	},
 );
 
+router.get(
+	"/verify/email",
+	HeaderFieldValidator("Authorization"),
+	Authorization,
+	OTPInterval(1, "mailVerification"),
+	async (req, res) => {
+		// TODO: OTP can only be generated in `X` minutes intervals
+		const otpReqInterval = 1; // 1 minute
+
+		const { id } = res.locals.decodedToken;
+		console.log("ID from res: ", id);
+
+		const otpTokenDuration = 30; // in minutes
+		const otpTokenStr = otpGen.generate(8, { specialChars: false });
+
+		try {
+			const _otpToken = await OTPToken.findOneAndUpdate(
+				{ accountID: id },
+				{
+					accountID: id,
+					token: await bcrypt.hash(otpTokenStr, 8),
+					validDuration: otpTokenDuration,
+					verificationType: "mailVerification",
+				},
+				{
+					new: true,
+					upsert: true,
+				},
+			).populate("accountID");
+
+			// Send OTP EMail
+			await sendMail(
+				_otpToken.accountID.email,
+				"Email Verification",
+				htmlMailOTPTemplate({
+					otpToken: otpTokenStr,
+					otpTokenDuration: `${otpTokenDuration} minutes`,
+				}),
+			);
+
+			res.status(201).json(
+				apiResponse({
+					message: `OTP send to ${_otpToken.accountID.email} successfully`,
+				}),
+			);
+		} catch (err) {
+			console.error(err, "error in sending OTP");
+			res.status(400).json(
+				apiResponse(null, {
+					code: "OTP_SERVICE_ERROR",
+					message: err.toString(),
+				}),
+			);
+		}
+	},
+);
+
 router.post(
 	"/verify/email",
 	HeaderFieldValidator("Authorization"),
 	Authorization,
-	(req, res) => {
-		console.log(req.header("Authorization"));
-		res.status(201).send({ l: true, tok: req.token });
+	ReqFieldValidator(
+		{
+			code: "MISSING_AUTHENTICATION_INFO",
+			message: "OTP code missing",
+		},
+		[{ location: "body", keys: ["mailOTPCode"] }],
+	),
+	async (req, res) => {
+		// TODO: Since, we'll be using OTP verification frequently, why dont we write it as a middleware
+		// Get otp from DB
+
+		const _otp = await OTPToken.findOne({
+			accountID: res.locals.decodedToken.id,
+			verificationType: "mailVerification",
+		});
+		// Check otp token entry in DB
+		if (!_otp) {
+			res.status(401).json(
+				apiResponse(nil, {
+					code: "OTP_SERVICE_ERROR",
+					message: "OTP token not found in DB",
+				}),
+			);
+		}
+		try {
+			// Check OTP is valid
+			await _otp.verifyToken(req.body.mailOTPCode);
+			// change account status to pending
+			await Account.findOneAndUpdate(
+				{ _id: res.locals.decodedToken.id },
+				{
+					status: "pending",
+				},
+			);
+			// Remove token from DB
+			await OTPToken.deleteOne({ _id: _otp._id });
+
+			res
+				.status(201)
+				.json(apiResponse({ message: "OTP successfully verified" }));
+		} catch (err) {
+			res.status(401).json(
+				apiResponse(null, {
+					code: "OTP_SERVICE_ERROR",
+					message: err.toString(),
+				}),
+			);
+		}
 	},
 );
 
 module.exports = router;
-
-// _FieldValidator(
-// 	{ code: "MISSING_TOKEN", message: "authentication token not present" },
-// 	[{location: , keys: [header, ]}]
-// ),

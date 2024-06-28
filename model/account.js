@@ -93,7 +93,7 @@ AccountSchema.methods.generateAuthToken = function () {
 			id: this._id.toString(),
 		},
 		process.env.JWT_SECRET,
-		{ algorithm: "HS256", expiresIn: "1m" },
+		{ algorithm: "HS256", expiresIn: "1d" },
 	);
 	return token;
 };

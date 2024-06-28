@@ -2,6 +2,7 @@ require("dotenv").config({ path: "config/dev.env" });
 
 const express = require("express");
 const logger = require("morgan");
+const cors = require("cors");
 
 const mongoose = require("./db/mongoose");
 
@@ -11,6 +12,7 @@ const apiResponse = require("./utils/apiResponse");
 const app = express();
 
 app.use(logger("dev"));
+app.use(cors());
 app.use(express.json());
 
 app.use("/api/account", loginRouter);

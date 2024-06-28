@@ -13,8 +13,9 @@ const Authorization = async (req, res, next) => {
 		const acc = await Account.findOne({ _id: decoded.id });
 		if (!acc) throw new Error("id in token is not valid");
 
-		req.acc = acc;
-		req.token = token;
+		res.locals.acc = acc;
+		res.locals.token = token;
+		res.locals.decodedToken = decoded;
 
 		next();
 	} catch (err) {
