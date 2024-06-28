@@ -11,7 +11,6 @@ const AccountSchema = new Schema(
 			type: String,
 			trim: true,
 			required: true,
-			unique: true,
 			lowercase: true,
 			validate: function (val) {
 				if (!validator.isEmail(val)) throw new Error("Invalid Email");
@@ -21,8 +20,13 @@ const AccountSchema = new Schema(
 			type: String,
 			trim: true,
 			required: true,
-			unique: true,
 			lowercase: true,
+			validate: function (val) {
+				if (!validator.isAlphanumeric(val))
+					throw new Error(
+						"Invalid Username, should contain only AlphaNumeric character",
+					);
+			},
 		},
 		password: {
 			type: String,
@@ -50,8 +54,9 @@ const AccountSchema = new Schema(
 		status: {
 			type: String,
 			required: true,
-			enum: ["active", "pending", "reject"],
-			default: "pending",
+			// inactive: email not verified by OTP
+			enum: ["active", "pending", "reject", "inactive"],
+			default: "inactive",
 		},
 		accountType: {
 			type: String,
@@ -82,23 +87,28 @@ AccountSchema.pre("save", async function (next) {
 
 // Generate JWT Token
 AccountSchema.methods.generateAuthToken = function () {
+	console.log("JWT Generator", this._id, this._id.toString());
 	const token = jwt.sign(
 		{
 			id: this._id.toString(),
 		},
 		process.env.JWT_SECRET,
-		{ algorithm: "HS256", expiresIn: 5 },
+		{ algorithm: "HS256", expiresIn: "1m" },
 	);
 	return token;
 };
 
 // check account credential is valid
-AccountSchema.statics.checkCredential = async (email, password) => {
-	const user = await this.findOne({ email });
+AccountSchema.statics.findAndCheckCredential = async function (
+	email,
+	password,
+	accountType,
+) {
+	const user = await this.findOne({ email, accountType });
 	if (!user) throw new Error("email doesnt exist"); // Email doesnt exist
 	const match = await bcrypt.compare(password, user.password); // compare password hash
 	if (!match) {
-		// password doesnt exist
+		// password doesnt match
 		throw new Error("password doesnt match");
 	}
 	return user;
