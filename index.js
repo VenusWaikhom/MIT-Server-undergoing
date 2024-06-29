@@ -6,8 +6,10 @@ const cors = require("cors");
 
 const mongoose = require("./db/mongoose");
 
-const loginRouter = require("./routers/Account");
 const apiResponse = require("./utils/apiResponse");
+
+const accountRouter = require("./routers/Account");
+const adminRouter = require("./routers/Admin");
 
 const app = express();
 
@@ -15,7 +17,8 @@ app.use(logger("dev"));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/account", loginRouter);
+app.use("/api/account", accountRouter);
+app.use("/api/admin", adminRouter);
 
 // 404 Handler
 app.use((req, res, next) => {

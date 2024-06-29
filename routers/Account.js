@@ -6,7 +6,7 @@ const {
 } = require("../middleware/SignUpValidator");
 const ValidateSignupField = require("../middleware/ValidateSignupField");
 const ValidateLoginField = require("../middleware/ValidateLoginField");
-const Authorization = require("../middleware/Authorization");
+const JWTAuthentication = require("../middleware/JWTAuthentication");
 const OTPInterval = require("../middleware/OTPInterval");
 
 const {
@@ -56,7 +56,7 @@ router.post(
 router.get(
 	"/verify/email",
 	HeaderFieldValidator("Authorization"),
-	Authorization,
+	JWTAuthentication,
 	OTPInterval(1, "mailVerification"),
 	verifyEmailGet,
 );
@@ -64,7 +64,7 @@ router.get(
 router.post(
 	"/verify/email",
 	HeaderFieldValidator("Authorization"),
-	Authorization,
+	JWTAuthentication,
 	ReqFieldValidator(
 		{
 			code: "MISSING_AUTHENTICATION_INFO",

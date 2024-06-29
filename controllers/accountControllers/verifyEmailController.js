@@ -6,7 +6,7 @@ const OTPToken = require("../../model/otpToken");
 
 const apiResponse = require("../../utils/apiResponse");
 const { sendMail } = require("../../utils/mailSender");
-const htmlMailOTPTemplate = require("../../template/mailOTPTemplate");
+const htmlMailVerifyOTPTemplate = require("../../template/mailVerifyOTPTemplate");
 
 const verifyEmailGet = async (req, res) => {
 	const { id } = res.locals.decodedToken;
@@ -34,12 +34,12 @@ const verifyEmailGet = async (req, res) => {
 		await sendMail(
 			_otpToken.accountID.email,
 			"Email Verification",
-			htmlMailOTPTemplate({
+			htmlMailVerifyOTPTemplate({
 				otpToken: otpTokenStr,
 				otpTokenDuration: `${otpTokenDuration} minutes`,
 			}),
 		);
-		// console.log("OTP: ", otpTokenStr);
+		console.log("OTP: ", otpTokenStr);
 		res.status(201).json(
 			apiResponse({
 				message: `OTP send to ${_otpToken.accountID.email} successfully`,

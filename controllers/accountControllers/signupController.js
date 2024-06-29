@@ -9,7 +9,6 @@ const signupPostHandler = async (req, res) => {
 	session.startTransaction();
 	try {
 		// Check username already exist with the same role
-
 		let account = await Account.findOne({
 			username: req.body.username,
 			accountType: req.body.accountType,
@@ -47,7 +46,7 @@ const signupPostHandler = async (req, res) => {
 		const token = await nAccount.generateAuthToken();
 		res.status(201).send(apiResponse({ account: nAccount, token }));
 	} catch (err) {
-		session.abortTransaction();
+		await session.abortTransaction();
 		session.endSession();
 
 		res

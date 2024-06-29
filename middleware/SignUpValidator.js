@@ -31,18 +31,43 @@ const signupVaildator = (req, res, next) => {
 // Check Req contain the given key
 const ReqFieldValidator = (err, fields) => {
 	return (req, res, next) => {
-		for (let { location, keys, error } of fields) {
+		for (let { location, keys, values, validatorCb, error } of fields) {
 			if (!location || !keys)
 				throw new Error("location and keys should be present");
-
+			// Check fields present
 			let field = req[location];
 			for (let key of keys) {
 				if (!(key in field)) {
-					return res
-						.status(400)
-						.send(apiResponse(null, error === undefined ? err : error));
+					return res.status(400).json(
+						apiResponse(null, {
+							code: "REQ_FIELD_VALIDATION_ERROR",
+							message: error === undefined ? err : error,
+						}),
+					);
 				}
 				field = field[key];
+			}
+			// Check allow values
+			if (values && values.filter((d) => d === field).length === 0) {
+				return res.status(400).json(
+					apiResponse(null, {
+						code: "REQ_FIELD_VALIDATION_ERROR",
+						message: `invalid value for location: ${location.toString()} and key: ${keys.join(
+							".",
+						)}`,
+					}),
+				);
+			}
+			// Check Validator callback
+			if (validatorCb && validatorCb(field)) {
+				return res.status(400).json(
+					apiResponse(null, {
+						code: "REQ_FIELD_VALIDATION_ERROR",
+						message: `validation faled for location: ${location.toString()} and key: ${keys.join(
+							".",
+						)}`,
+					}),
+				);
 			}
 		}
 		next();
@@ -58,7 +83,7 @@ const HeaderFieldValidator =
 				return res.status(400).send(
 					apiResponse(null, {
 						code: "MISSING HEADER FIELD",
-						message: `${headerKey} required`,
+						message: `${headerKey} header key required`,
 					}),
 				);
 			}
