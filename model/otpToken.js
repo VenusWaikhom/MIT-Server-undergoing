@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const otpGen = require("otp-generator");
+
+const permToken = require("./permToken");
 // const mailSender = require();
 
 const Schema = mongoose.Schema;
@@ -10,6 +13,7 @@ const OTPTokenSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "Account",
 			required: true,
+			unique: true,
 		},
 		token: {
 			type: String,
@@ -46,5 +50,22 @@ OTPTokenSchema.methods.verifyToken = async function (otpTokenStr) {
 	}
 	return true;
 };
+
+OTPTokenSchema.post(
+	"deleteOne",
+	{ document: true, query: false },
+	async function (doc) {
+		console.log(doc);
+		try {
+			await new permToken({
+				accountID: doc.accountID,
+				token: otpGen.generate(16),
+			}).save();
+		} catch (err) {
+			console.error(err.toString());
+			throw new Error(err);
+		}
+	},
+);
 
 module.exports = mongoose.model("OTPToken", OTPTokenSchema);

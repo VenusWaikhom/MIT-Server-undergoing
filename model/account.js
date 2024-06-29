@@ -85,6 +85,16 @@ AccountSchema.pre("save", async function (next) {
 	next();
 });
 
+// TODO: add post deleteOne middleware to delete related document from DB
+AccountSchema.post("deleteOne", async function (doc) {
+	console.log(doc);
+	if (doc) {
+		const { _id } = doc;
+
+		// TODO: Delete from faculty collection also
+	}
+});
+
 // Generate JWT Token
 AccountSchema.methods.generateAuthToken = function () {
 	console.log("JWT Generator", this._id, this._id.toString());
