@@ -39,7 +39,7 @@ const verifyEmailGet = async (req, res) => {
 				otpTokenDuration: `${otpTokenDuration} minutes`,
 			}),
 		);
-		console.log("OTP: ", otpTokenStr);
+		if (process.env.ENV === "dev") console.log("OTP: ", otpTokenStr);
 		res.status(201).json(
 			apiResponse({
 				message: `OTP send to ${_otpToken.accountID.email} successfully`,
@@ -69,17 +69,14 @@ const verifyEmailPost = async (req, res) => {
 		return res.status(401).json(
 			apiResponse(null, {
 				code: "OTP_SERVICE_ERROR",
-				message:
-					process.env.ENV === "dev"
-						? "OTP token not found in DB, check whether otp req has been made"
-						: "OTP token verification failed",
+				message: process.env.ENV === "dev" ? "OTP timeout" : "OTP timeout",
 			}),
 		);
 	}
 	try {
 		// Check OTP is valid
 		await _otp.verifyToken(req.body.mailOTPCode);
-		// change account status to pending
+		// change account status to pending by admin
 		await Account.findOneAndUpdate(
 			{ _id: res.locals.decodedToken.id },
 			{

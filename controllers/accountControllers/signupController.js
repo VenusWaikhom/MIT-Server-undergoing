@@ -44,7 +44,13 @@ const signupPostHandler = async (req, res) => {
 		session.endSession();
 		// Send jwt token
 		const token = await nAccount.generateAuthToken();
-		res.status(201).send(apiResponse({ account: nAccount, token }));
+		res.status(201).send(
+			apiResponse({
+				message: "account successfully created",
+				account: { _id: nAccount._id, accountType: nAccount.accountType },
+				token,
+			}),
+		);
 	} catch (err) {
 		await session.abortTransaction();
 		session.endSession();

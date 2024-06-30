@@ -17,17 +17,6 @@ const signupVaildator = (req, res, next) => {
 	next();
 };
 
-// const FieldValidator = (err, ...fields) => {
-// 	return (req, res, next) => {
-// 		for (let field of fields) {
-// 			if (!field) {
-// 				return res.status(400).send(apiResponse(null, err));
-// 			}
-// 		}
-// 		next();
-// 	};
-// };
-
 // Check Req contain the given key
 const ReqFieldValidator = (err, fields) => {
 	return (req, res, next) => {
@@ -59,11 +48,11 @@ const ReqFieldValidator = (err, fields) => {
 				);
 			}
 			// Check Validator callback
-			if (validatorCb && validatorCb(field)) {
+			if (validatorCb && !validatorCb(field)) {
 				return res.status(400).json(
 					apiResponse(null, {
 						code: "REQ_FIELD_VALIDATION_ERROR",
-						message: `validation faled for location: ${location.toString()} and key: ${keys.join(
+						message: `validation failed for location: ${location.toString()} and key: ${keys.join(
 							".",
 						)}`,
 					}),

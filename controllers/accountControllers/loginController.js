@@ -14,7 +14,13 @@ const loginPostHandler = async (req, res) => {
 		// Generate JWT token
 		const token = await account.generateAuthToken();
 
-		res.status(202).send(apiResponse({ jwtToken: token }));
+		res.status(202).send(
+			apiResponse({
+				message: "account login successful",
+				account: { _id: account._id, accountType: account.accountType },
+				token,
+			}),
+		);
 	} catch (err) {
 		console.error(err);
 		res.status(400).send(

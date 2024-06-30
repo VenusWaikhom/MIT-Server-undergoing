@@ -4,7 +4,12 @@ const Schema = mongoose.Schema;
 
 const GallerySchema = new Schema(
 	{
-		galleryName: { type: String, required: true, maxLength: 100 },
+		galleryName: {
+			type: String,
+			required: true,
+			maxLength: 100,
+			default: "general",
+		},
 	},
 	{ timestamps: true },
 );

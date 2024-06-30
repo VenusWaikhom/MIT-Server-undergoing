@@ -18,6 +18,7 @@ const OTPTokenSchema = new Schema(
 		token: {
 			type: String,
 			required: true,
+			expires: "60s",
 		},
 		validDuration: {
 			type: Number, // in minutes
@@ -28,6 +29,10 @@ const OTPTokenSchema = new Schema(
 			required: true,
 			enum: ["mailVerification", "changePassword"],
 			default: "mailVerification",
+		},
+		expiredAt: {
+			type: Date,
+			default: Date.now() + 1 * 60 * 1000, // expires in 1 minutes
 		},
 	},
 	{
@@ -50,22 +55,5 @@ OTPTokenSchema.methods.verifyToken = async function (otpTokenStr) {
 	}
 	return true;
 };
-
-OTPTokenSchema.post(
-	"deleteOne",
-	{ document: true, query: false },
-	async function (doc) {
-		console.log(doc);
-		try {
-			await new permToken({
-				accountID: doc.accountID,
-				token: otpGen.generate(16),
-			}).save();
-		} catch (err) {
-			console.error(err.toString());
-			throw new Error(err);
-		}
-	},
-);
 
 module.exports = mongoose.model("OTPToken", OTPTokenSchema);

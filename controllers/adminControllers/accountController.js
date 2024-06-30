@@ -3,6 +3,8 @@ const otpGen = require("otp-generator");
 
 const account = require("../../model/account");
 const permToken = require("../../model/permToken");
+const otpToken = require("../../model/otpToken");
+const facultyProfile = require("../../model/facultyProfile");
 
 const apiResponse = require("../../utils/apiResponse");
 
@@ -63,9 +65,25 @@ const accountDelete = async (req, res) => {
 					message: "account id not found",
 				}),
 			);
+
+		const accountType = _acc.accountType;
 		await account.deleteOne({ _id: accountId });
+
+		// Delete Permanent Token, if faculty
+		if (accountType === "faculty") {
+			await permToken.deleteOne({ accountID: accountId });
+			// Delete related info from facultyProfile collection
+			await facultyProfile.deleteOne({ accountId: accountId });
+		}
+		// Delete related info from OTP collection, if exist
+		await otpToken.deleteMany({ accountID: accountId });
+
 		await session.commitTransaction();
 		session.endSession();
+
+		res
+			.status(201)
+			.json(apiResponse({ message: `${accountId} deleted successfully` }));
 	} catch (err) {
 		await session.abortTransaction();
 		session.endSession();

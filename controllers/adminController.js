@@ -6,7 +6,8 @@ const {
 	accountDetailGet,
 } = require("./adminControllers/accountDetailController");
 const {
-	accountSearchGet,
+	accountSearchEmailGet,
+	accountSearchUsernameGet,
 } = require("./adminControllers/accountSearchController");
 const { getAccountsGet } = require("./adminControllers/getAccountController");
 const {
@@ -14,10 +15,11 @@ const {
 } = require("./adminControllers/getAccountFilterController");
 
 module.exports = {
+	accountSearchEmailGet,
+	accountSearchUsernameGet,
 	accountDelete,
 	accountPatch,
 	accountDetailGet,
-	accountSearchGet,
 	getAccountFilterGet,
 	getAccountsGet,
 };

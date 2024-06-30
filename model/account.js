@@ -3,6 +3,10 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const validator = require("validator");
 
+const permToken = require("./permToken");
+const otpToken = require("./otpToken");
+const facultyProfile = require("./facultyProfile");
+
 const Schema = mongoose.Schema;
 
 const AccountSchema = new Schema(
@@ -75,24 +79,15 @@ AccountSchema.pre("save", async function (next) {
 	if (this.isModified("password")) {
 		const salt = 8;
 		const hashPassword = await bcrypt.hash(this.password, salt);
-		console.log(
-			"password before and after hash: ",
-			this.password,
-			hashPassword,
-		);
+		if (process.env.ENV === "dev")
+			console.log(
+				"password before and after hash: ",
+				this.password,
+				hashPassword,
+			);
 		this.password = hashPassword;
 	}
 	next();
-});
-
-// TODO: add post deleteOne middleware to delete related document from DB
-AccountSchema.post("deleteOne", async function (doc) {
-	console.log(doc);
-	if (doc) {
-		const { _id } = doc;
-
-		// TODO: Delete from faculty collection also
-	}
 });
 
 // Generate JWT Token

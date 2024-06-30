@@ -5,7 +5,6 @@ const apiResponse = require("../utils/apiResponse");
 const OTPInterval = (interval, verificationType) => async (req, res, next) => {
 	const _otpToken = await OTPToken.findOne({
 		accountID: res.locals.decodedToken.id,
-		// accountId: new mongoose.Types.ObjectId(res.locals.decodedToken.id),
 		verificationType,
 	});
 	// First entry
@@ -14,10 +13,7 @@ const OTPInterval = (interval, verificationType) => async (req, res, next) => {
 	// check for interval
 	const isUnderInterval =
 		Date.now() < new Date(_otpToken.updatedAt).getTime() + interval * 60 * 1000;
-	// console.log(
-	// 	Date.now(),
-	// 	new Date(_otpToken.updatedAt).getTime() + interval * 60 * 1000,
-	// );
+
 	if (isUnderInterval) {
 		return res.status(401).json(
 			apiResponse(null, {

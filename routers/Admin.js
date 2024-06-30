@@ -10,7 +10,8 @@ const Authorization = require("../middleware/Authorization");
 const {
 	getAccountsGet,
 	getAccountFilterGet,
-	accountSearchGet,
+	accountSearchEmailGet,
+	accountSearchUsernameGet,
 	accountPatch,
 	accountDelete,
 	accountDetailGet,
@@ -31,7 +32,7 @@ router.get(
 	"/getaccounts/filter",
 	HeaderFieldValidator("Authorization"),
 	JWTAuthentication,
-	Authorization(["admin"], ["pending"]),
+	Authorization(["admin"], ["active"]),
 	ReqFieldValidator(
 		{
 			code: "MISSING_QUERY_PARAMS",
@@ -53,7 +54,51 @@ router.get(
 	getAccountFilterGet,
 );
 
-router.get("/account/search", accountSearchGet);
+router.get(
+	"/account/search/email",
+	HeaderFieldValidator("Authorization"),
+	JWTAuthentication,
+	Authorization(["admin"], ["active"]),
+	ReqFieldValidator(
+		{
+			code: "MISSING_FORM_FIELD",
+			message: "req field is not complete",
+		},
+		[
+			{
+				location: "query",
+				keys: ["q"],
+				validatorCb: (val) =>
+					typeof val === "string" &&
+					val.trim().length !== 0 &&
+					validator.isEmail(val),
+			},
+		],
+	),
+	accountSearchEmailGet,
+);
+
+router.get(
+	"/account/search/username",
+	HeaderFieldValidator("Authorization"),
+	JWTAuthentication,
+	Authorization(["admin"], ["active"]),
+	ReqFieldValidator(
+		{
+			code: "MISSING_FORM_FIELD",
+			message: "req field is not complete",
+		},
+		[
+			{
+				location: "query",
+				keys: ["q"],
+				validatorCb: (val) =>
+					typeof val === "string" && val.trim().length !== 0,
+			},
+		],
+	),
+	accountSearchUsernameGet,
+);
 
 // TODO: Send mail to user when their account status get updated
 // Controller will update account status, for faculty account
