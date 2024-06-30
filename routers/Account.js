@@ -75,4 +75,7 @@ router.post(
 	verifyEmailPost,
 );
 
+// router.get("/forgotpassword/");
+// router.post("/forgotpassword/");
+
 module.exports = router;

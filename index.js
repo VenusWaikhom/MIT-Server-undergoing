@@ -17,8 +17,10 @@ app.use(logger("dev"));
 app.use(cors());
 app.use(express.json());
 
+// API Routes
 app.use("/api/account", accountRouter);
 app.use("/api/admin", adminRouter);
+///////////////////////////////////////////
 
 // 404 Handler
 app.use((req, res, next) => {
