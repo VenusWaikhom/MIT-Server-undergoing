@@ -15,14 +15,16 @@ const OTPInterval = (interval, verificationType) => async (req, res, next) => {
 		Date.now() < new Date(_otpToken.updatedAt).getTime() + interval * 60 * 1000;
 
 	if (isUnderInterval) {
-		return res.status(401).json(
+		res.status(401).json(
 			apiResponse(null, {
 				code: "OTP_SERVICE_ERROR",
 				message: `OTP can be request in ${interval} minute interval`,
 			}),
 		);
+		return false;
 	}
 	next();
+	return true;
 };
 
 module.exports = OTPInterval;

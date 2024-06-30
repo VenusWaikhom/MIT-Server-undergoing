@@ -1,3 +1,7 @@
+const {
+	forgotPasswordPost,
+	forgotPasswordGet,
+} = require("./accountControllers/forgotPasswordController");
 const { loginPostHandler } = require("./accountControllers/loginController");
 const { signupPostHandler } = require("./accountControllers/signupController");
 const {
@@ -10,4 +14,6 @@ module.exports = {
 	signupPostHandler,
 	verifyEmailGet,
 	verifyEmailPost,
+	forgotPasswordGet,
+	forgotPasswordPost,
 };

@@ -17,12 +17,10 @@ const verifyEmailGet = async (req, res) => {
 
 	try {
 		const _otpToken = await OTPToken.findOneAndUpdate(
-			{ accountID: id },
+			{ accountID: id, verificationType: "mailVerification" },
 			{
-				accountID: id,
 				token: await bcrypt.hash(otpTokenStr, 8),
 				validDuration: otpTokenDuration,
-				verificationType: "mailVerification",
 			},
 			{
 				new: true,

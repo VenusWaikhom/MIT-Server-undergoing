@@ -13,7 +13,6 @@ const OTPTokenSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "Account",
 			required: true,
-			unique: true,
 		},
 		token: {
 			type: String,
@@ -27,7 +26,7 @@ const OTPTokenSchema = new Schema(
 		verificationType: {
 			type: String,
 			required: true,
-			enum: ["mailVerification", "changePassword"],
+			enum: ["mailVerification", "forgotPassword"],
 			default: "mailVerification",
 		},
 		expiredAt: {

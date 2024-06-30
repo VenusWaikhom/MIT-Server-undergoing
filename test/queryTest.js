@@ -15,3 +15,5 @@ const email = "";
 	});
 	console.log(accounts);
 })();
+
+console.log(typeof +process.env.SALT);

@@ -1,4 +1,5 @@
 const express = require("express");
+const validator = require("validator");
 
 const {
 	ReqFieldValidator,
@@ -14,6 +15,8 @@ const {
 	signupPostHandler,
 	verifyEmailGet,
 	verifyEmailPost,
+	forgotPasswordGet,
+	forgotPasswordPost,
 } = require("../controllers/accountController");
 
 const router = new express.Router();
@@ -75,7 +78,25 @@ router.post(
 	verifyEmailPost,
 );
 
-// router.get("/forgotpassword/");
-// router.post("/forgotpassword/");
+// TODO: Implement controller
+router.get(
+	"/forgotpassword/",
+	ReqFieldValidator(
+		{
+			code: "MISSING_REQ_FIELD",
+			message: "invalid req field",
+		},
+		[
+			{
+				location: "body",
+				keys: ["email"],
+				validatorCb: (val) => validator.isEmail(val),
+			},
+		],
+	),
+	forgotPasswordGet,
+);
+
+router.post("/forgotpassword/", forgotPasswordPost);
 
 module.exports = router;
