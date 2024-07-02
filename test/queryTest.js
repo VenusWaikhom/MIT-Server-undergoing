@@ -13,7 +13,16 @@ const email = "";
 			{ email: { $regex: `${email}.*` } },
 		],
 	});
-	console.log(accounts);
+	// console.log(accounts);
 })();
 
 console.log(typeof +process.env.SALT);
+
+(async () => {
+	const accounts = await account.findOneAndUpdate(
+		{ username: "lkh", accountType: "faculty" },
+		{},
+		{ new: true },
+	);
+	console.log("Accounts updates: ", accounts);
+})();

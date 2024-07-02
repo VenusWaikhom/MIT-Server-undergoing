@@ -45,6 +45,7 @@ const FacultyProfileSchema = new Schema(
 						"administrative assistant",
 						"registrar",
 						"librarian",
+						"vice chancellor",
 					],
 				},
 			],

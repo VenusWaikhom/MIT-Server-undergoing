@@ -77,8 +77,7 @@ const AccountSchema = new Schema(
 // Hash Password
 AccountSchema.pre("save", async function (next) {
 	if (this.isModified("password")) {
-		const salt = 8;
-		const hashPassword = await bcrypt.hash(this.password, salt);
+		const hashPassword = await bcrypt.hash(this.password, +process.env.SALT);
 		if (process.env.ENV === "dev")
 			console.log(
 				"password before and after hash: ",

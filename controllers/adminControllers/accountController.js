@@ -29,7 +29,7 @@ const accountPatch = async (req, res) => {
 		if (_acc.accountType === "faculty" && status === "active") {
 			await permToken.findOneAndUpdate(
 				{ accountID: accountId },
-				{ token: otpGen.generate(16) },
+				{ token: otpGen.generate(process.env.PERM_TOKEN_LEN) },
 				{
 					upsert: true,
 				},

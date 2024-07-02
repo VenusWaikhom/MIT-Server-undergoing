@@ -1,6 +1,9 @@
+const { changePasswordPost } = require("./accountControllers/changePassword");
 const {
-	forgotPasswordPost,
 	forgotPasswordGet,
+	forgotPasswordOTPPost,
+	forgotPasswordPermTokenPost,
+	forgotPasswordVerifyOTPPost,
 } = require("./accountControllers/forgotPasswordController");
 const { loginPostHandler } = require("./accountControllers/loginController");
 const { signupPostHandler } = require("./accountControllers/signupController");
@@ -15,5 +18,8 @@ module.exports = {
 	verifyEmailGet,
 	verifyEmailPost,
 	forgotPasswordGet,
-	forgotPasswordPost,
+	forgotPasswordPermTokenPost,
+	forgotPasswordOTPPost,
+	forgotPasswordVerifyOTPPost,
+	changePasswordPost,
 };

@@ -4,6 +4,7 @@ const apiResponse = require("../utils/apiResponse");
 /**
  * Middleware to check wether the account has accessed to resource | api route
  * Check account role and status
+ * Should used in chain  with JWT Authentication middleware only
  * @param {Array<string>} accountType - "admin"|"faculty"
  * @param {Array<string>} accountStatus - "active"|"pending"|"inactive"|"rejected"
  */

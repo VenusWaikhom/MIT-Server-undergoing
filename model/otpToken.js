@@ -13,6 +13,8 @@ const OTPTokenSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "Account",
 			required: true,
+			expires: "60s",
+			index: true,
 		},
 		token: {
 			type: String,
@@ -23,6 +25,7 @@ const OTPTokenSchema = new Schema(
 			type: Number, // in minutes
 			required: true,
 		},
+		verified: { type: Boolean, default: false, required: true },
 		verificationType: {
 			type: String,
 			required: true,
@@ -32,6 +35,8 @@ const OTPTokenSchema = new Schema(
 		expiredAt: {
 			type: Date,
 			default: Date.now() + 1 * 60 * 1000, // expires in 1 minutes
+			expireAfterSeconds: 10,
+			index: true,
 		},
 	},
 	{
