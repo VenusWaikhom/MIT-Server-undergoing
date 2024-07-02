@@ -14,6 +14,13 @@ JWT_SECRET=<jwt-secret-key>
 PORT=<port-no>
 MONGODB_URL=<mongodb-connection-uri>
 
+OTP_TOKEN_DURATION=<in minutes>
+SALT=<number>
+OTP_INTERVAL=<in minutes>
+OTP_TOKEN_LEN=<number>
+
+PERM_TOKEN_LEN=<number>
+
 BOT_MAIL=<otp-mail-address>
 BOT_MAIL_PASSWORD=<otp-mail-password>
 ```
