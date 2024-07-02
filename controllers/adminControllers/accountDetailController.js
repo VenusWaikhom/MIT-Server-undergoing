@@ -1,14 +1,3 @@
-const mongoose = require("mongoose");
-const express = require("express");
-const otpGen = require("otp-generator");
-
-const {
-	HeaderFieldValidator,
-	ReqFieldValidator,
-} = require("../../middleware/SignUpValidator");
-const JWTAuthentication = require("../../middleware/JWTAuthentication");
-const Authorization = require("../../middleware/Authorization");
-
 const account = require("../../model/account");
 const permToken = require("../../model/permToken");
 

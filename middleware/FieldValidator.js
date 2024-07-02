@@ -1,21 +1,4 @@
-const validator = require("validator");
 const apiResponse = require("../utils/apiResponse");
-
-// Check required field for validation is present
-const signupVaildator = (req, res, next) => {
-	const { email, username, password, accountType } = req.body;
-
-	if (!email || !username || !password || !accountType) {
-		return res.status(400).send(
-			apiResponse(null, {
-				code: "MISSING_AUTHENTICATION_INFO",
-				message: "credential required",
-			}),
-		);
-	}
-
-	next();
-};
 
 // Check Req contain the given key
 const ReqFieldValidator = (err, fields) => {
@@ -43,7 +26,7 @@ const ReqFieldValidator = (err, fields) => {
 						code: "REQ_FIELD_VALIDATION_ERROR",
 						message: `invalid value for location: ${location.toString()} and key: ${keys.join(
 							".",
-						)}`,
+						)}. Result: ${error}`,
 					}),
 				);
 			}
@@ -54,7 +37,7 @@ const ReqFieldValidator = (err, fields) => {
 						code: "REQ_FIELD_VALIDATION_ERROR",
 						message: `validation failed for location: ${location.toString()} and key: ${keys.join(
 							".",
-						)}`,
+						)}. Result: ${error}`,
 					}),
 				);
 			}

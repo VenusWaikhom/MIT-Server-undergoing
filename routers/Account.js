@@ -4,9 +4,7 @@ const validator = require("validator");
 const {
 	ReqFieldValidator,
 	HeaderFieldValidator,
-} = require("../middleware/SignUpValidator");
-const ValidateSignupField = require("../middleware/ValidateSignupField");
-const ValidateLoginField = require("../middleware/ValidateLoginField");
+} = require("../middleware/FieldValidator");
 const JWTAuthentication = require("../middleware/JWTAuthentication");
 const OTPInterval = require("../middleware/OTPInterval");
 
@@ -21,7 +19,8 @@ const {
 	forgotPasswordVerifyOTPPost,
 	changePasswordPost,
 } = require("../controllers/accountController");
-const { default: mongoose } = require("mongoose");
+
+const { passwordValidator } = require("../utils/passwordValidator");
 
 const router = new express.Router();
 
@@ -33,12 +32,20 @@ router.post(
 			message: "credential required",
 		},
 		[
-			{ location: "body", keys: ["email"] },
-			{ location: "body", keys: ["password"] },
-			{ location: "body", keys: ["accountType"] },
+			{
+				location: "body",
+				keys: ["email"],
+				validatorCb: (val) => validator.isEmail(val),
+			},
+			{
+				location: "body",
+				keys: ["password"],
+				validatorCb: (val) => passwordValidator(val),
+			},
+			{ location: "body", keys: ["accountType"], values: ["faculty", "admin"] },
 		],
 	),
-	ValidateLoginField,
+	// ValidateLoginField,
 	loginPostHandler,
 );
 
@@ -50,13 +57,34 @@ router.post(
 			message: "credential required",
 		},
 		[
-			{ location: "body", keys: ["email"] },
-			{ location: "body", keys: ["username"] },
-			{ location: "body", keys: ["password"] },
-			{ location: "body", keys: ["accountType"] },
+			{
+				location: "body",
+				keys: ["email"],
+				validatorCb: (val) => validator.isEmail(val),
+				error: "Invalid Email",
+			},
+			{
+				location: "body",
+				keys: ["username"],
+				validatorCb: (val) => validator.isAlphanumeric(val),
+				error: "Invalid Username, should contain only AlphaNumeric character",
+			},
+			{
+				location: "body",
+				keys: ["password"],
+				validatorCb: (val) => passwordValidator(val),
+				error:
+					"password musn't contain password, password should contain min 1 uppercase, 1 lowercase, 1 special character, 1 num and min length of 7",
+			},
+			{
+				location: "body",
+				keys: ["accountType"],
+				values: ["admin", "faculty"],
+				error: "account type should be faculty and admin only",
+			},
 		],
 	),
-	ValidateSignupField,
+	// ValidateSignupField,
 	signupPostHandler,
 );
 
@@ -77,7 +105,13 @@ router.post(
 			code: "MISSING_AUTHENTICATION_INFO",
 			message: "OTP code missing",
 		},
-		[{ location: "body", keys: ["mailOTPCode"] }],
+		[
+			{
+				location: "body",
+				keys: ["mailOTPCode"],
+				validatorCb: (val) => val.length === +process.env.OTP_TOKEN_LEN,
+			},
+		],
 	),
 	verifyEmailPost,
 );
@@ -121,15 +155,7 @@ router.post(
 			{
 				location: "body",
 				keys: ["password"],
-				validatorCb: (val) =>
-					!val.toLowerCase().includes("password") &&
-					validator.isStrongPassword(val, {
-						minNumbers: 1,
-						minLowercase: 1,
-						minUppercase: 1,
-						minSymbols: 1,
-						minLength: 7,
-					}),
+				validatorCb: (val) => passwordValidator(val),
 			},
 		],
 	),
@@ -152,15 +178,7 @@ router.post(
 			{
 				location: "body",
 				keys: ["password"],
-				validatorCb: (val) =>
-					!val.toLowerCase().includes("password") &&
-					validator.isStrongPassword(val, {
-						minNumbers: 1,
-						minLowercase: 1,
-						minUppercase: 1,
-						minSymbols: 1,
-						minLength: 7,
-					}),
+				validatorCb: (val) => passwordValidator(val),
 			},
 		],
 	),
@@ -190,7 +208,7 @@ router.post(
 	forgotPasswordVerifyOTPPost,
 );
 
-// TODO: Check accountstatus of token
+// TODO: Check permtoken regeneration controller
 // router.get(
 // 	"/status",
 // 	HeaderFieldValidator("Authorization"),
@@ -211,28 +229,16 @@ router.post(
 			{
 				location: "body",
 				keys: ["oldPassword"],
-				validatorCb: (val) =>
-					!val.toLowerCase().includes("password") &&
-					validator.isStrongPassword(val, {
-						minNumbers: 1,
-						minLowercase: 1,
-						minUppercase: 1,
-						minSymbols: 1,
-						minLength: 7,
-					}),
+				validatorCb: (val) => passwordValidator(val),
+				error:
+					"password musn't contain password, password should contain min 1 uppercase, 1 lowercase, 1 special character, 1 num and min length of 7",
 			},
 			{
 				location: "body",
 				keys: ["newPassword"],
-				validatorCb: (val) =>
-					!val.toLowerCase().includes("password") &&
-					validator.isStrongPassword(val, {
-						minNumbers: 1,
-						minLowercase: 1,
-						minUppercase: 1,
-						minSymbols: 1,
-						minLength: 7,
-					}),
+				validatorCb: (val) => passwordValidator(val),
+				error:
+					"password musn't contain password, password should contain min 1 uppercase, 1 lowercase, 1 special character, 1 num and min length of 7",
 			},
 		],
 	),

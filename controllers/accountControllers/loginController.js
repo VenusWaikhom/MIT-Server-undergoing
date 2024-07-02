@@ -17,7 +17,13 @@ const loginPostHandler = async (req, res) => {
 		res.status(202).send(
 			apiResponse({
 				message: "account login successful",
-				account: { _id: account._id, accountType: account.accountType },
+				account: {
+					_id: account._id,
+					accountType: account.accountType,
+					email: account.email,
+					username: account.username,
+					status: account.status,
+				},
 				token,
 			}),
 		);

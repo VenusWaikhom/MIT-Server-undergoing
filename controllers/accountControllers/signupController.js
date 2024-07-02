@@ -47,7 +47,13 @@ const signupPostHandler = async (req, res) => {
 		res.status(201).send(
 			apiResponse({
 				message: "account successfully created",
-				account: { _id: nAccount._id, accountType: nAccount.accountType },
+				account: {
+					_id: nAccount._id,
+					accountType: nAccount.accountType,
+					email: nAccount.email,
+					username: nAccount.username,
+					status: nAccount.status,
+				},
 				token,
 			}),
 		);

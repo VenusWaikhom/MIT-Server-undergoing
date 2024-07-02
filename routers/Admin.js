@@ -3,7 +3,7 @@ const express = require("express");
 const {
 	HeaderFieldValidator,
 	ReqFieldValidator,
-} = require("../middleware/SignUpValidator");
+} = require("../middleware/FieldValidator");
 const JWTAuthentication = require("../middleware/JWTAuthentication");
 const Authorization = require("../middleware/Authorization");
 
@@ -16,7 +16,8 @@ const {
 	accountDelete,
 	accountDetailGet,
 } = require("../controllers/adminController");
-const { default: mongoose } = require("mongoose");
+
+const mongoose = require("mongoose");
 
 const router = new express.Router();
 
