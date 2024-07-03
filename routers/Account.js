@@ -7,6 +7,7 @@ const {
 } = require("../middleware/FieldValidator");
 const JWTAuthentication = require("../middleware/JWTAuthentication");
 const OTPInterval = require("../middleware/OTPInterval");
+const Authorization = require("../middleware/Authorization");
 
 const {
 	loginPostHandler,
@@ -164,6 +165,7 @@ router.post(
 
 router.post(
 	"/forgotpassword/permtoken",
+	Authorization(["faculty"], ["active"]),
 	ReqFieldValidator(
 		{
 			code: "MISSING_REQ_FIELD",
