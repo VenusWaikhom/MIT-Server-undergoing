@@ -6,7 +6,8 @@
 	"scripts": {
 		"test": "jest",
 		"dev": "env-cmd -f ./config/dev.env nodemon index.js",
-		"start": "nodemon index.js"
+		"ci": "npm install",
+		"start": "node index.js"
 	},
 	"author": "Student_Batch (2020)",
 	"license": "ISC",
@@ -21,8 +22,10 @@
 		"morgan": "^1.10.0",
 		"multer": "^1.4.5-lts.1",
 		"nodemailer": "^6.9.13",
-		"nodemon": "^3.1.4",
 		"otp-generator": "^4.0.1",
 		"validator": "^13.11.0"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.4"
 	}
 }
