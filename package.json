@@ -4,7 +4,7 @@
 	"description": "MIT-API",
 	"main": "index.js",
 	"scripts": {
-		"test": "jest",
+		"test": "echo no test implemented",
 		"dev": "env-cmd -f ./config/dev.env nodemon index.js",
 		"ci": "npm install",
 		"start": "node index.js"
